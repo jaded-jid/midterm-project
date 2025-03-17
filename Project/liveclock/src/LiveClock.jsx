@@ -1,50 +1,64 @@
-import React, { useState, useEffect } from 'react';
-import './App.css';
+import React, { useState, useEffect } from "react";
 
 const LiveClock = () => {
-  const [time, setTime] = useState(new Date().toLocaleTimeString());
+  const [time, setTime] = useState(new Date());
   const [isRunning, setIsRunning] = useState(false);
-  const [format, setFormat] = useState('24-hour');
-  let intervalId = null;
+  const [is24Hour, setIs24Hour] = useState(true);
+  let intervalId;
 
   useEffect(() => {
     if (isRunning) {
       intervalId = setInterval(() => {
-        const now = new Date();
-        setTime(format === '12-hour' ? now.toLocaleTimeString('en-US') : now.toLocaleTimeString('en-GB'));
+        setTime(new Date());
       }, 1000);
     }
     return () => clearInterval(intervalId);
-  }, [isRunning, format]);
+  }, [isRunning]);
 
-  const startClock = () => setIsRunning(true);
-  const stopClock = () => {
-    setIsRunning(false);
-    clearInterval(intervalId);
+  const toggleClock = () => {
+    setIsRunning(!isRunning);
   };
-  
+
+  const toggleFormat = () => {
+    setIs24Hour(!is24Hour);
+  };
+
   return (
-    <div className="live-clock-container">
-      <h1 className="live-clock-time">{time}</h1>
-      <div className="live-clock-buttons">
+    <div style={{ 
+      display: "flex", 
+      flexDirection: "column", 
+      alignItems: "center", 
+      justifyContent: "center", 
+      height: "100vh", 
+      backgroundColor: "black", 
+      color: "white", 
+      fontFamily: "Arial, sans-serif" 
+    }}>
+      <h1 style={{ fontSize: "2.5rem", marginBottom: "10px" }}>Live Digital Clock</h1>
+      <h2 style={{ fontSize: "2rem", padding: "10px 20px", borderRadius: "8px", border: "2px solid white" }}>
+        {time.toLocaleTimeString([], { hour12: !is24Hour })}
+      </h2>
+      <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>
         <button 
-          onClick={startClock} 
+          onClick={toggleClock} 
           disabled={isRunning} 
-          className={`start-btn ${isRunning ? 'disabled' : ''}`}
-        >Start</button>
+          style={{ padding: "10px 15px", fontSize: "1rem", borderRadius: "5px", cursor: "pointer", backgroundColor: "white", color: "black", border: "2px solid white", opacity: isRunning ? "0.5" : "1" }}
+        >
+          Start
+        </button>
         <button 
-          onClick={stopClock} 
+          onClick={toggleClock} 
           disabled={!isRunning} 
-          className={`stop-btn ${!isRunning ? 'disabled' : ''}`}
-        >Stop</button>
+          style={{ padding: "10px 15px", fontSize: "1rem", borderRadius: "5px", cursor: "pointer", backgroundColor: "white", color: "black", border: "2px solid white", opacity: !isRunning ? "0.5" : "1" }}
+        >
+          Stop
+        </button>
         <button 
-          onClick={() => setFormat('12-hour')} 
-          className={`format-btn ${format === '12-hour' ? 'active-format' : ''}`}
-        >12-Hour</button>
-        <button 
-          onClick={() => setFormat('24-hour')} 
-          className={`format-btn ${format === '24-hour' ? 'active-format' : ''}`}
-        >24-Hour</button>
+          onClick={toggleFormat} 
+          style={{ padding: "10px 15px", fontSize: "1rem", borderRadius: "5px", cursor: "pointer", backgroundColor: "white", color: "black", border: "2px solid white" }}
+        >
+          {is24Hour ? "12-hour" : "24-hour"}
+        </button>
       </div>
     </div>
   );
